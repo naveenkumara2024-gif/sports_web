@@ -1,5 +1,5 @@
 import express from 'express';
-
+import {MatchRouter} from "./Routes/matches.js";
 const app = express();
 const port = 8000;
 
@@ -9,6 +9,7 @@ app.get('/', (req, res) => {
   res.json({ message: 'Hello from Express!' });
 });
 
+app.use('/Matches',MatchRouter);
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
 });
