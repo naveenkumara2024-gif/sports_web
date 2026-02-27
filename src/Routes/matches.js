@@ -36,14 +36,14 @@ MatchRouter.post('/', async (req, res) => {
             endTime: new Date(endTime),
             homeScore: homeScore ?? 0,
             awayScore: awayScore ?? 0,
-            status: getMatchStatus(startTime, endTime),
+            status: getMatchStatus(startTime, endTime) ?? 'scheduled',
         }).returning();
 
         res.status(201).json({ data: event });
     } catch (e) {
+        console.error('Failed to create match:', e);
         res.status(500).json({
-            error: 'Failed to create match.',
-            details: JSON.stringify(e)
+            error: 'Failed to create match.'
         });
     }
 });

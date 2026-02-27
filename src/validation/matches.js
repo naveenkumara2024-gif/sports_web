@@ -26,12 +26,12 @@ export const createMatchSchema = z.object({
   endTime: z.iso.datetime(),
   homeScore: z.coerce.number().int().nonnegative().optional(),
   awayScore: z.coerce.number().int().nonnegative().optional(),
-}).superRefine((data, ctx) => {
+}).check((data, ctx) => {
   const start = new Date(data.startTime);
   const end = new Date(data.endTime);
   if (end <= start) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
+    ctx.issues.push({
+      code: 'custom',
       message: 'endTime must be chronologically after startTime',
       path: ['endTime'],
     });
