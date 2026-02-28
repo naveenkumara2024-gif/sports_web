@@ -24,10 +24,28 @@ export function sendWebsocket(server) {
         path:'/ws',
         maxPayload: 1024 * 1024,
     });
+
+
     wss.on('connection', (ws) => {
+        ws.isAlive = true;
+        ws.on('pong', () => {
+            ws.isAlive = true;
+        })
         sendJson(ws,{type: 'welcome'});
         ws.on('error', console.error);
     });
+    const interval = setInterval(() => {
+        wss.clients.forEach((client) => {
+            if(client.isAlive===false){
+                return client.terminate();
+            }
+            client.isAlive = false;
+            client.ping();
+        })
+    },30000);
+    wss.on('close', () => {
+        clearInterval(interval);
+    })
     function broadcastMatchCreated(match) {
         broadcast(wss,{type: 'match_created',data: match});
     }
