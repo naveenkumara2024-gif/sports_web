@@ -12,7 +12,7 @@ function sendJson(socket,msg) {
 function broadcast(wss,msg) {
     for( const client of wss.clients ){
         if( client.readyState !== WebSocket.OPEN ){
-            return;
+            continue;
         }
         client.send(JSON.stringify(msg));
     }
@@ -22,7 +22,7 @@ export function sendWebsocket(server) {
     const wss = new WebSocketServer({
         server,
         path:'/ws',
-        maxRetries: 1024 * 1024,
+        maxPayload: 1024 * 1024,
     });
     wss.on('connection', (ws) => {
         sendJson(ws,{type: 'welcome'});

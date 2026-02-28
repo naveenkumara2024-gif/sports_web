@@ -3,7 +3,13 @@ import http from 'http';
 import {sendWebsocket} from './ws/server.js';
 import {MatchRouter} from "./Routes/matches.js";
 const app = express();
-const PORT = Number(process.env.PORT || 8000);
+const DEFAULT_PORT = 8000;
+let PORT = Number(process.env.PORT || DEFAULT_PORT);
+
+if (!Number.isSafeInteger(PORT) || PORT < 1 || PORT > 65535) {
+  console.warn(`Invalid PORT value: ${process.env.PORT}. Falling back to default: ${DEFAULT_PORT}`);
+  PORT = DEFAULT_PORT;
+}
 const HOST = process.env.HOST || '0.0.0.0';
 const server = http.createServer(app);
 app.use(express.json());

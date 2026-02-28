@@ -38,10 +38,18 @@ MatchRouter.post('/', async (req, res) => {
             awayScore: awayScore ?? 0,
             status: getMatchStatus(startTime, endTime) ?? 'scheduled',
         }).returning();
-        if(res.app.locals.broadcastMatchCreated){
-            res.app.locals.broadcastMatchCreated(event)
-        }
+
         res.status(201).json({ data: event });
+
+        // Broadcast after successful insert and response
+        if (typeof res.app.locals.broadcastMatchCreated === 'function') {
+            try {
+                res.app.locals.broadcastMatchCreated(event);
+            } catch (broadcastError) {
+                const logger = res.app.locals.logger || console;
+                logger.error('Failed to broadcast match created event:', broadcastError);
+            }
+        }
     } catch (e) {
         console.error('Failed to create match:', e);
         res.status(500).json({
